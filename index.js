@@ -1,6 +1,8 @@
 const { request, response } = require("express");
 const express = require("express");
+const randomInt = (imax=1000) => Math.floor(Math.random() * imax)
 const app = express();
+app.use(express.json())
 
 let persons = [
     { 
@@ -50,6 +52,19 @@ app.delete("/api/persons/:id", (request, response) => {
   const id = Number(request.params.id)
   persons = persons.filter((p) => p.id !== id)
   response.status(204).end()
+})
+
+app.post("/api/persons", (request, response) => {
+  const newPerson = request.body
+  const existingIds = persons.map((p) => Number(p.id))
+  let id = 1
+  while (existingIds.includes(id)) {
+    id = randomInt()
+  }
+  newPerson.id = id
+  console.log(`Adding ${newPerson.name} with ID=${id}`)
+  persons = persons.concat(newPerson)
+  response.json(newPerson)
 })
 
 const PORT = 3001
