@@ -1,8 +1,17 @@
 const { request, response } = require("express");
 const express = require("express");
-const randomInt = (imax=1000) => Math.floor(Math.random() * imax)
 const app = express();
 app.use(express.json())
+
+const randomInt = (imax=1000) => Math.floor(Math.random() * imax)
+
+const generateId = (existingIds) => {
+  let id = 1
+  while (existingIds.includes(id)) {
+    id = randomInt()
+  }
+  return id
+}
 
 let persons = [
     { 
@@ -57,14 +66,27 @@ app.delete("/api/persons/:id", (request, response) => {
 app.post("/api/persons", (request, response) => {
   const newPerson = request.body
   const existingIds = persons.map((p) => Number(p.id))
-  let id = 1
-  while (existingIds.includes(id)) {
-    id = randomInt()
+  const existingNames = persons.map((p) => p.name)
+  newPerson.id = generateId(existingIds)
+  
+  // error handling
+  if (!(newPerson.name)) {
+    response.status(400).json({
+      error: "person must have name"
+    }).end()
+  } else if (!(newPerson.number)) {
+    response.status(400).json({
+      error: "person must have number"
+    }).end()
+  } else if (existingNames.includes(newPerson.name)) {
+    response.status(400).json({
+      error: "name must be unique"
+    }).end()
+  } else {
+    console.log(`Adding ${newPerson.name} with ID=${newPerson.id}`)
+    persons = persons.concat(newPerson)
+    response.json(newPerson)  
   }
-  newPerson.id = id
-  console.log(`Adding ${newPerson.name} with ID=${id}`)
-  persons = persons.concat(newPerson)
-  response.json(newPerson)
 })
 
 const PORT = 3001
