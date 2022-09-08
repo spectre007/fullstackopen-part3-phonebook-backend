@@ -2,10 +2,6 @@ const { request, response } = require("express");
 const express = require("express");
 const morgan = require("morgan");
 
-const app = express();
-app.use(express.json())
-app.use(morgan("tiny"))
-
 const randomInt = (imax=1000) => Math.floor(Math.random() * imax)
 
 const generateId = (existingIds) => {
@@ -15,6 +11,22 @@ const generateId = (existingIds) => {
   }
   return id
 }
+
+const allButPOST = (req, res) => req.method !== "POST"
+const onlyPOST = (req, res) => req.method === "POST"
+
+morgan.token("person", (req) => {
+    const {name, number} = req.body
+    return JSON.stringify({name, number})
+})
+morgan.token("tinyWithPerson",
+    ":method :url :status :res[content-length] - :response-time ms :person"
+)
+
+const app = express();
+app.use(express.json())
+app.use(morgan("tinyWithPerson", {skip: allButPOST}))
+app.use(morgan("tiny", {skip: onlyPOST}))
 
 let persons = [
     { 
@@ -86,7 +98,6 @@ app.post("/api/persons", (request, response) => {
       error: "name must be unique"
     }).end()
   } else {
-    console.log(`Adding ${newPerson.name} with ID=${newPerson.id}`)
     persons = persons.concat(newPerson)
     response.json(newPerson)  
   }
