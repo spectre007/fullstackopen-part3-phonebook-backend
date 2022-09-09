@@ -1,6 +1,7 @@
 const { request, response } = require("express");
 const express = require("express");
 const morgan = require("morgan");
+const cors = require("cors");
 
 const randomInt = (imax=1000) => Math.floor(Math.random() * imax)
 
@@ -25,6 +26,7 @@ morgan.token("tinyWithPerson",
 
 const app = express();
 app.use(express.json())
+app.use(cors())
 app.use(morgan("tinyWithPerson", {skip: allButPOST}))
 app.use(morgan("tiny", {skip: onlyPOST}))
 
