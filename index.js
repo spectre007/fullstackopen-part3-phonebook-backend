@@ -26,6 +26,7 @@ morgan.token("tinyWithPerson",
 
 const app = express();
 app.use(express.json())
+app.use(express.static("build"))
 app.use(cors())
 app.use(morgan("tinyWithPerson", {skip: allButPOST}))
 app.use(morgan("tiny", {skip: onlyPOST}))

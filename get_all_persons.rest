@@ -13,3 +13,21 @@ Content-Type: application/json
     "name": "Jane Doe",
     "number": "+1 (555)234-5678"
 }
+
+###
+
+GET https://lingering-flower-6041.fly.dev/api/persons
+
+###
+
+DELETE https://lingering-flower-6041.fly.dev/api/persons/681
+
+###
+
+POST https://lingering-flower-6041.fly.dev/api/persons HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "Jane Doe",
+    "number": "+1 (555)234-5678"
+}
