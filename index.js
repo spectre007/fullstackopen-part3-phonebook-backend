@@ -1,8 +1,11 @@
-const { request, response } = require("express");
+require("dotenv").config()
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
+const Person = require("./models/person")
 
+
+// utility functions
 const randomInt = (imax=1000) => Math.floor(Math.random() * imax)
 
 const generateId = (existingIds) => {
@@ -13,6 +16,7 @@ const generateId = (existingIds) => {
   return id
 }
 
+// morgan logger
 const allButPOST = (req, res) => req.method !== "POST"
 const onlyPOST = (req, res) => req.method === "POST"
 
@@ -24,6 +28,7 @@ morgan.token("tinyWithPerson",
     ":method :url :status :res[content-length] - :response-time ms :person"
 )
 
+// app & middleware
 const app = express();
 app.use(express.json())
 app.use(express.static("build"))
@@ -62,7 +67,9 @@ app.get("/info", (request, response) => {
 })
 
 app.get("/api/persons", (request, response) => {
-  response.json(persons)
+  Person.find({}).then(persons => {
+    response.json(persons)
+  })
 })
 
 app.get("/api/persons/:id", (request, response) => {
@@ -106,7 +113,7 @@ app.post("/api/persons", (request, response) => {
   }
 })
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
