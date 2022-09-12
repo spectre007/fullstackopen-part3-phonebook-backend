@@ -89,28 +89,20 @@ app.delete("/api/persons/:id", (request, response) => {
 })
 
 app.post("/api/persons", (request, response) => {
-  const newPerson = request.body
-  const existingIds = persons.map((p) => Number(p.id))
-  const existingNames = persons.map((p) => p.name)
-  newPerson.id = generateId(existingIds)
+  const {body} = request
   
-  // error handling
-  if (!(newPerson.name)) {
-    response.status(400).json({
-      error: "person must have name"
-    }).end()
-  } else if (!(newPerson.number)) {
-    response.status(400).json({
-      error: "person must have number"
-    }).end()
-  } else if (existingNames.includes(newPerson.name)) {
-    response.status(400).json({
-      error: "name must be unique"
-    }).end()
-  } else {
-    persons = persons.concat(newPerson)
-    response.json(newPerson)  
+  if (!(body.name) || !(body.number)) {
+    return response.status(400).json({ error: "content missing" })
   }
+
+  const newPerson = new Person({
+    name: body.name,
+    number: body.number,
+  })
+
+  newPerson.save().then((savedPerson) => {
+    response.json(savedPerson)
+  })
 })
 
 const PORT = process.env.PORT
