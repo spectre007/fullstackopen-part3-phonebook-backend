@@ -104,9 +104,21 @@ app.post("/api/persons", (request, response) => {
     number: body.number,
   })
 
-  newPerson.save().then((savedPerson) => {
+  newPerson.save()
+    .then((savedPerson) => {
     response.json(savedPerson)
   })
+  .catch(error => next(error))
+})
+
+app.put("/api/persons/:id", (request, response, next) => {
+  const {body} = request
+  
+  Person.findByIdAndUpdate(request.params.id, {number: body.number}, { new: true, runValidators: true })
+    .then(updatedPerson => {
+      response.json(updatedPerson)
+    })
+    .catch(error => next(error))
 })
 
 // set error handler as last app.use() and after a route calls
