@@ -1,8 +1,8 @@
 const mongoose = require("mongoose")
 
 // extract from command line arguments
-const hasAddOption = process.argv.length > 3
-const [password, name, number, ...rest] = process.argv.slice(2)
+const hasAddOption = process.argv.length > 3 // eslint-disable-line no-undef
+const [password, name, number, ...rest] = process.argv.slice(2) // eslint-disable-line no-undef, no-unused-vars
 
 const url = `mongodb+srv://fullstack:${password}@pitaja.ozzbjha.mongodb.net/personApp?retryWrites=true&w=majority`
 
@@ -23,7 +23,7 @@ const findAllPeople = () => {
     })
 }
 
-const savePerson = ({name, number}) => {
+const savePerson = ({ name, number }) => {
   const person = new Person({
     name,
     number,
@@ -37,7 +37,7 @@ mongoose
     console.log("connected")
 
     if (hasAddOption) {
-      return savePerson({name, number})
+      return savePerson({ name, number })
     } else {
       return findAllPeople()
     }
